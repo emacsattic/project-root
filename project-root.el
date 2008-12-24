@@ -1,9 +1,10 @@
 ;;; project-root.el --- Define a project root and take actions based upon it.
 
-;; Copyright (C) 2008 Philip Jackson
+;; Copyright (C) 2008 Philip Jackson, Alexander Solovyov
 
 ;; Author: Philip Jackson <phil@shellarchive.co.uk>
-;; Version: 0.6
+;; Author: Alexander Solovyov <piranha@piranha.org.ua>
+;; Version: 0.7
 
 ;; This file is not currently part of GNU Emacs.
 
