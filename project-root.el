@@ -333,7 +333,7 @@ one."
 
 (defun project-root-ack ()
   "Run the ack command from the current project root (if ack is
-avalible)."
+available)."
   (interactive)
   (with-project-root
     (if (fboundp 'ack)
@@ -352,6 +352,8 @@ directory they are found in so that they are unique."
                 (add-to-list 'file-alist file-cons)
                 file-cons))
             (split-string (shell-command-to-string
+;; I'd like to switch to find-cmd there but BSD/OS X wants gfind,
+;; so I would do check here manually.
                            (concat "find " default-directory
                                    (project-root-find-prune exclude-paths)
                                    " -type f -regex \""
