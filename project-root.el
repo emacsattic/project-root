@@ -352,25 +352,36 @@ directory they are found in so that they are unique."
                 (add-to-list 'file-alist file-cons)
                 file-cons))
             (split-string (shell-command-to-string
-;; I'd like to switch to find-cmd there but BSD/OS X wants gfind,
-;; so I would do check here manually.
-                           (concat "find " default-directory
+                           (project-root-find-cmd))))))
+                           ;; TODO: use find-cmd here
+                           (concat "gfind " default-directory
                                    (project-root-find-prune exclude-paths)
                                    " -type f -regex \""
                                    filename-regex
-                                   "\" " project-root-find-options))))))
+                                   "\" "
+                                   (if pattern
+                                       (concat "*" pattern "*"))
+                                   project-root-find-options))))))
+
+(defun project-root-find-cmd (&rest pattern)
+  (let ((pattern (car pattern)))
+    ;; TODO: use find-cmd here
+    (concat "gfind " default-directory
+            (project-root-find-prune exclude-paths)
+            (project-root-find-prune '(".hg" ".git"))
+            " -type f -regex \"" filename-regex "\" "
+            (if pattern (concat " -name '*" pattern "*' "))
+            project-root-find-options)))
 
 (defun project-root-find-prune (paths)
   (mapconcat '(lambda (path)
-                (concat " -path \""
-                        default-directory path
-                        "\" -prune -o"))
+                (concat " -path \"" path "\" -prune -o "))
              paths ""))
 
 (defun project-root-filename (file)
   (let ((name (replace-regexp-in-string default-directory ""
                                         (expand-file-name file))))
-    (mapconcat 'identity (reverse (split-string name "/")) "<")))
+    (mapconcat 'identity (reverse (split-string name "/")) "\\")))
 
 (defun project-root-find-file ()
   "Find a file from a list of those that exist in the current
