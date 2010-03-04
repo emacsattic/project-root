@@ -207,10 +207,14 @@ project."
   "Grab the bookmarks (if any) for PROJECT."
   (project-root-data :bookmarks project))
 
+(defun project-root-project-name (project) 
+  "Generate cute name for project"
+  (upcase-initials (car (last (split-string (cdr project) "/" t)))))
+
 (defun project-root-gen-org-url (project)
   ;; The first link to the project root itself
   (concat "** [[file:" (cdr project)
-          "][" (car project)
+          "][" (project-root-project-name project)
           "]] (" (cdr project)
           ")\n"
           ;; And now the bookmarks, should there be any
