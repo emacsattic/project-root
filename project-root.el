@@ -160,6 +160,9 @@ a filesystem tree")
 
 Use this to exclude portions of your project: \"-not -regex \\\".*vendor.*\\\"\"")
 
+(defvar project-root-storage-file "~/.emacs.d/.project-roots"
+  "File, where seen projects info is saved.")
+
 (defun project-root-path-matches (re)
   "Apply RE to the current buffer name returning the first
 match."
@@ -249,6 +252,22 @@ project."
       (goto-char (+ point-to 3))
       (show-children))
     (setq buffer-read-only t)))
+
+(defun project-root-save-roots ()
+  "Saves seen projects info to file. Note that
+ this is not done automatically"
+  (interactive)
+  (with-temp-buffer
+    (print project-root-seen-projects (current-buffer))
+    (write-file project-root-storage-file)))
+
+(defun project-root-load-roots()
+  "Loads seen projects info from file"
+  (interactive)
+  (with-temp-buffer
+    (insert-file-contents project-root-storage-file)
+    (setq project-root-seen-projects (read (buffer-string)))))
+
 
 ;; TODO: refactor me
 (defun project-root-fetch (&optional dont-run-on-hit)
