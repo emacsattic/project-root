@@ -1,9 +1,10 @@
 ;;; project-root.el --- Define a project root and take actions based upon it.
 
-;; Copyright (C) 2008 Philip Jackson, Alexander Solovyov
+;; Copyright (C) 2008-2010 Philip Jackson, Alexander Solovyov, Vladimir Sidorenko
 
 ;; Author: Philip Jackson <phil@shellarchive.co.uk>
 ;; Author: Alexander Solovyov <piranha@piranha.org.ua>
+;; Author: Vladimir Sidorenko <yoyavova@gmail.com>
 ;; Version: 0.7
 
 ;; This file is not currently part of GNU Emacs.
@@ -163,6 +164,12 @@ Use this to exclude portions of your project: \"-not -regex \\\".*vendor.*\\\"\"
 (defvar project-root-storage-file "~/.emacs.d/.project-roots"
   "File, where seen projects info is saved.")
 
+(defvar project-root-project-name-func 'project-root-project-name-is-dir
+  "Function to generate cute name for project.")
+
+(defun project-root-project-name (project)
+  (funcall project-root-project-name-func project))
+
 (defun project-root-path-matches (re)
   "Apply RE to the current buffer name returning the first
 match."
@@ -210,8 +217,8 @@ project."
   "Grab the bookmarks (if any) for PROJECT."
   (project-root-data :bookmarks project))
 
-(defun project-root-project-name (project) 
-  "Generate cute name for project"
+(defun project-root-project-name-is-dir (project) 
+  "Generate cute name for project from it's directory."
   (upcase-initials (car (last (split-string (cdr project) "/" t)))))
 
 (defun project-root-gen-org-url (project)
@@ -451,6 +458,18 @@ then the current project-details are used."
             ))
     (ido-switch-buffer)))
 
+(defun project-root-projects-names ()
+  "Generates a list of pairs - project name and path."
+  (mapcar (lambda (project)
+            (cons (project-root-project-name project) (cdr project)))
+          project-root-seen-projects))
+
+(defun project-root-open-project ()
+  "Open project with ido-mode."
+  (interactive)
+  (let* ((project-names (project-root-projects-names))
+         (project (ido-completing-read "Select project: " (mapcar 'car project-names))))
+    (find-file (cdr (assoc project project-names)))))
 
 ;;; anything.el config
 
