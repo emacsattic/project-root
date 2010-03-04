@@ -408,7 +408,8 @@ then the current project-details are used."
      (file-exists-p filename)
      (not (null (string-match
                  (regexp-quote (abbreviate-file-name (cdr p)))
-                 filename))))))
+                  (abbreviate-file-name filename)))))))
+
 
 ;;; anything.el config
 
