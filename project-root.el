@@ -429,6 +429,28 @@ then the current project-details are used."
                  (regexp-quote (abbreviate-file-name (cdr p)))
                   (abbreviate-file-name filename)))))))
 
+(defun project-root-buffer-in-project (buffer &optional p)
+  "Check to see if buffer is in project"
+  (let ((filename (buffer-file-name buffer)))
+    (and filename (project-root-file-in-project filename p))))
+
+(defun ido-ignore-not-in-project (name)
+  "Function to use with ido-ignore-buffers.
+ Ignores files that are not in current project."
+  (not (project-root-buffer-in-project (get-buffer name))))
+
+(defun project-root-switch-buffer (arg)
+  "ido-switch-buffer replacement. Ignore buffers that are not in current project,
+   fallback to original ido-switch-buffer if no current project.
+   Can be used with universal-argument to run orifinal function even in project."
+  (interactive "P")
+  (if (and (null arg) (or project-details (project-root-fetch)))
+      (with-project-root
+          (let ((ido-ignore-buffers (append '(ido-ignore-not-in-project) ido-ignore-files)))
+            (ido-switch-buffer)
+            ))
+    (ido-switch-buffer)))
+
 
 ;;; anything.el config
 
