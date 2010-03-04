@@ -353,15 +353,6 @@ directory they are found in so that they are unique."
                 file-cons))
             (split-string (shell-command-to-string
                            (project-root-find-cmd))))))
-                           ;; TODO: use find-cmd here
-                           (concat "gfind " default-directory
-                                   (project-root-find-prune exclude-paths)
-                                   " -type f -regex \""
-                                   filename-regex
-                                   "\" "
-                                   (if pattern
-                                       (concat "*" pattern "*"))
-                                   project-root-find-options))))))
 
 (defun project-root-find-cmd (&rest pattern)
   (let ((pattern (car pattern)))
