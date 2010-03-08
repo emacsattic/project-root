@@ -296,8 +296,14 @@ will be used as defined in `project-roots'."
              nil))))
     ;; set the actual var used by apps and add to the global project
     ;; list
-    (when (setq project-details project)
-      (add-to-list 'project-root-seen-projects project))))
+    (when project
+      (project-root-set-project project))))
+
+(defun project-root-set-project (p)
+  (when (not (member p project-root-seen-projects))
+    (add-to-list 'project-root-seen-projects project)
+    (project-root-save-roots))
+  (setq project-details project))
 
 (defun project-root-every (pred seq)
   "Return non-nil if pred of each element, of seq is non-nil."
