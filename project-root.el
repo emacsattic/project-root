@@ -258,6 +258,7 @@ project."
     (when point-to
       (goto-char (+ point-to 3))
       (show-children))
+    (local-set-key "q" 'kill-this-buffer)
     (setq buffer-read-only t)))
 
 (defun project-root-save-roots ()
