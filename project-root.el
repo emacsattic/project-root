@@ -241,6 +241,8 @@ project."
   (interactive)
   (let ((current-project project-details)
         (point-to nil))
+    (if (not project-root-seen-projects)
+        (project-root-load-roots))
     (switch-to-buffer (get-buffer-create "*Seen Project List*"))
     (erase-buffer)
     (insert "* Seen projects\n")
@@ -269,7 +271,7 @@ project."
     (print project-root-seen-projects (current-buffer))
     (write-file project-root-storage-file)))
 
-(defun project-root-load-roots()
+(defun project-root-load-roots ()
   "Loads seen projects info from file"
   (interactive)
   (with-temp-buffer
@@ -301,6 +303,8 @@ will be used as defined in `project-roots'."
       (project-root-set-project project))))
 
 (defun project-root-set-project (p)
+  (if (not project-root-seen-projects)
+      (project-root-load-roots))
   (when (not (member p project-root-seen-projects))
     (add-to-list 'project-root-seen-projects project)
     (project-root-save-roots))
