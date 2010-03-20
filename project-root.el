@@ -5,7 +5,7 @@
 ;; Author: Philip Jackson <phil@shellarchive.co.uk>
 ;; Author: Alexander Solovyov <piranha@piranha.org.ua>
 ;; Author: Vladimir Sidorenko <yoyavova@gmail.com>
-;; Version: 0.7
+;; Version: 0.8-pre
 
 ;; This file is not currently part of GNU Emacs.
 
@@ -55,6 +55,7 @@
 ;; (global-set-key (kbd "C-c p g") 'project-root-grep)
 ;; (global-set-key (kbd "C-c p a") 'project-root-ack)
 ;; (global-set-key (kbd "C-c p d") 'project-root-goto-root)
+;; (global-set-key (kbd "C-c p p") 'project-root-run-default-command)
 ;; (global-set-key (kbd "C-c p l") 'project-root-browse-seen-projects)
 ;;
 ;; (global-set-key (kbd "C-c p M-x")
@@ -86,6 +87,7 @@
 ;; can use any amount of tests.
 
 ;;; Configuration:
+
 ;; :filename-regex should contain regular expression, which is passed
 ;;  to `find` to actually find files for your project.
 ;; :exclude-paths can contain paths to omit when searching for files.
@@ -98,6 +100,12 @@
 ;; relatively to the project root. Also, the bookmarks will present
 ;; themselves as anything candidates if you configure as instructed
 ;; below.
+
+;;; The default command:
+
+;; If you give a project a :default-command property you can execute
+;; it by running `project-root-run-default-command'. Nothing fancy but
+;; very handy.
 
 ;;; installation:
 
@@ -128,6 +136,11 @@
 
 (require 'find-cmd)
 (require 'cl)
+
+(eval-when-compile
+  (defvar anything-project-root)
+  (require 'outline)
+  (require 'dired))
 
 (defvar project-root-extra-find-args
   (find-to-string '(prune (name ".svn" ".git" ".hg")))
@@ -167,6 +180,15 @@ Use this to exclude portions of your project: \"-not -regex \\\".*vendor.*\\\"\"
 
 (defvar project-root-project-name-func 'project-root-project-name-is-dir
   "Function to generate cute name for project.")
+
+(defun project-root-run-default-command ()
+  "Run the command in :default-command, if there is one."
+  (interactive)
+  (with-project-root
+      (let ((command (project-root-data
+                      :default-command project-details)))
+        (when command
+          (funcall command)))))
 
 (defun project-root-project-name (project)
   (funcall project-root-project-name-func project))
@@ -482,6 +504,7 @@ then the current project-details are used."
   (let* ((project-names (project-root-projects-names))
          (project (ido-completing-read "Select project: " (mapcar 'car project-names))))
     (find-file (cdr (assoc project project-names)))))
+
 
 ;;; anything.el config
 
