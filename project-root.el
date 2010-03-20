@@ -368,7 +368,7 @@ current-directory."
     (and p (file-exists-p (cdr p)))))
 
 (defun regexify-ext-list (extensions)
-  "Turn a list of an extensions to a regexp."
+  "Turn a list of extensions to a regexp."
   (concat ".*\\.\\(" (mapconcat '(lambda (x) (format "%s" x))
                                 extensions "\\|") "\\)"))
 
