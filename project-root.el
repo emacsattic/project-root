@@ -312,7 +312,7 @@ will be used as defined in `project-roots'."
            (unless (mapc
                     (lambda (project)
                       (let ((name (car project))
-                            (run (plist-get (cdr project) :on-hit))
+                            (run (project-root-data :on-hit project))
                             (root (project-root-get-root (cdr project))))
                         (when root
                           (when (and root (not dont-run-on-hit) run)
