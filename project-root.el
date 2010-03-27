@@ -380,7 +380,7 @@ one."
   (unless project-details (project-root-fetch))
   `(if (project-root-p)
        (let ((default-directory ,(cdr project-details))
-             (filename-regex ,(project-root-data :filename-regex))
+             (filename-regex (or ,(project-root-data :filename-regex) ".*"))
              (exclude-paths ,(project-root-data :exclude-paths)))
          ,@body)
        (error "No project root found")))
@@ -423,15 +423,16 @@ directory they are found in so that they are unique."
     ;; TODO: use find-cmd here
     (concat "gfind " default-directory
             (project-root-find-prune exclude-paths)
-            (project-root-find-prune '(".hg" ".git"))
-            " -type f -regex \"" filename-regex "\" "
+            (project-root-find-prune
+             (mapcar (lambda (x) (concat default-directory x)) '(".hg" ".git")))
+            ", -type f -regex \"" filename-regex "\" "
             (if pattern (concat " -name '*" pattern "*' "))
             project-root-find-options)))
 
 (defun project-root-find-prune (paths)
   (mapconcat '(lambda (path)
-                (concat " -path \"" path "\" -prune -o "))
-             paths ""))
+                (concat " -path \"" path "\" -prune "))
+             paths "-o"))
 
 (defun project-root-filename (file)
   (let ((name (replace-regexp-in-string default-directory ""
