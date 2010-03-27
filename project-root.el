@@ -423,8 +423,7 @@ directory they are found in so that they are unique."
     ;; TODO: use find-cmd here
     (concat "gfind " default-directory
             (project-root-find-prune exclude-paths)
-            (project-root-find-prune
-             (mapcar (lambda (x) (concat default-directory x)) '(".hg" ".git")))
+            (project-root-find-prune '("*/.hg" "*/.git" "*/.svn"))
             ", -type f -regex \"" filename-regex "\" "
             (if pattern (concat " -name '*" pattern "*' "))
             project-root-find-options)))
