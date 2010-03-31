@@ -249,7 +249,7 @@ project."
   (concat "** [[file:" (cdr project)
           "][" (project-root-project-name project)
           "]] (" (cdr project)
-          ")\n"
+          ")"
           ;; And now the bookmarks, should there be any
           (mapconcat
            (lambda (b)
@@ -418,10 +418,19 @@ directory they are found in so that they are unique."
             (split-string (shell-command-to-string
                            (project-root-find-cmd))))))
 
+(setq .project-root-find-executable nil)
+(defun project-root-find-executable ()
+  (if .project-root-find-executable
+      .project-root-find-executable
+    (setq .project-root-find-executable (executable-find "gfind"))
+      (if (not .project-root-find-executable)
+          (setq .project-root-find-executable (executable-find "find")))
+      .project-root-find-executable))
+
 (defun project-root-find-cmd (&rest pattern)
   (let ((pattern (car pattern)))
     ;; TODO: use find-cmd here
-    (concat "gfind " default-directory
+    (concat (project-root-find-executable) " " default-directory
             (project-root-find-prune exclude-paths)
             (project-root-find-prune '("*/.hg" "*/.git" "*/.svn"))
             ", -type f -regex \"" filename-regex "\" "
