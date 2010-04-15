@@ -266,6 +266,7 @@ project."
         (point-to nil))
     (if (not project-root-seen-projects)
         (project-root-load-roots))
+
     (switch-to-buffer (get-buffer-create "*Seen Project List*"))
     (erase-buffer)
     (insert "* Seen projects\n")
@@ -283,7 +284,15 @@ project."
     (when point-to
       (goto-char (+ point-to 3))
       (show-children))
+
     (local-set-key "q" 'kill-this-buffer)
+    (local-set-key "s" 'isearch-forward)
+    (local-set-key "r" 'isearch-backward)
+    (local-set-key (kbd "RET") (lambda () (interactive)
+                                 (beginning-of-line)
+                                 (org-next-link)
+                                 (org-open-at-point t)))
+
     (setq buffer-read-only t)))
 
 (defun project-root-save-roots ()
@@ -496,7 +505,8 @@ then the current project-details are used."
   (interactive "P")
   (if (and (null arg) (or project-details (project-root-fetch)))
       (with-project-root
-          (let ((ido-ignore-buffers (append '(ido-ignore-not-in-project) ido-ignore-files)))
+          (let ((ido-ignore-buffers
+                 (append '(ido-ignore-not-in-project) ido-ignore-files)))
             (ido-switch-buffer)
             ))
     (ido-switch-buffer)))
