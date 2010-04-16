@@ -259,6 +259,17 @@ project."
            "\n")
           "\n"))
 
+(define-derived-mode project-root-list-mode org-mode "Project-List"
+  (setq buffer-read-only t))
+
+(define-key project-root-list-mode-map "q" 'kill-this-buffer)
+(define-key project-root-list-mode-map "s" 'isearch-forward)
+(define-key project-root-list-mode-map "r" 'isearch-backward)
+(define-key project-root-list-mode-map (kbd "RET") (lambda () (interactive)
+                                                     (beginning-of-line)
+                                                     (org-next-link)
+                                                     (org-open-at-point t)))
+
 (defun project-root-browse-seen-projects ()
   "Browse the projects that have been seen so far this session."
   (interactive)
@@ -276,24 +287,15 @@ project."
                 (setq point-to (point)))
               (insert (project-root-gen-org-url p))))
           project-root-seen-projects)
-    (org-mode)
+
+    (project-root-list-mode)
     ;; show everything at second level
     (goto-char (point-min))
     (show-children)
     ;; expand bookmarks for current project only
     (when point-to
       (goto-char (+ point-to 3))
-      (show-children))
-
-    (local-set-key "q" 'kill-this-buffer)
-    (local-set-key "s" 'isearch-forward)
-    (local-set-key "r" 'isearch-backward)
-    (local-set-key (kbd "RET") (lambda () (interactive)
-                                 (beginning-of-line)
-                                 (org-next-link)
-                                 (org-open-at-point t)))
-
-    (setq buffer-read-only t)))
+      (show-children))))
 
 (defun project-root-save-roots ()
   "Saves seen projects info to file. Note that
