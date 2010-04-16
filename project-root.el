@@ -308,9 +308,10 @@ project."
 (defun project-root-load-roots ()
   "Loads seen projects info from file"
   (interactive)
-  (with-temp-buffer
-    (insert-file-contents project-root-storage-file)
-    (setq project-root-seen-projects (read (buffer-string)))))
+  (if (file-exists-p project-root-storage-file)
+      (with-temp-buffer
+        (insert-file-contents project-root-storage-file)
+        (setq project-root-seen-projects (read (buffer-string))))))
 
 
 ;; TODO: refactor me
