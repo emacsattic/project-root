@@ -178,7 +178,7 @@ Use this to exclude portions of your project: \"-not -regex \\\".*vendor.*\\\"\"
 (defvar project-root-storage-file "~/.emacs.d/.project-roots"
   "File, where seen projects info is saved.")
 
-(defvar project-root-project-name-func 'project-root-project-name-is-dir
+(defvar project-root-project-name-func 'project-root-project-name-from-dir
   "Function to generate cute name for project.")
 
 (defun project-root-run-default-command ()
@@ -240,24 +240,24 @@ project."
   "Grab the bookmarks (if any) for PROJECT."
   (project-root-data :bookmarks project))
 
-(defun project-root-project-name-is-dir (project) 
-  "Generate cute name for project from it's directory."
+(defun project-root-project-name-from-dir (project)
+  "Generate cute name for project from its directory name."
   (upcase-initials (car (last (split-string (cdr project) "/" t)))))
 
 (defun project-root-gen-org-url (project)
   ;; The first link to the project root itself
-  (concat "** [[file:" (cdr project)
-          "][" (project-root-project-name project)
-          "]] (" (cdr project)
-          ")"
-          ;; And now the bookmarks, should there be any
-          (mapconcat
-           (lambda (b)
-             (let ((mark (concat (cdr project) b)))
-               (concat "*** [[file:" mark "][" b "]] (" mark ")")))
-           (project-root-bookmarks project)
-           "\n")
-          "\n"))
+  (concat
+   (format "** [[file:%s][%s]] (%s)"
+           (cdr project)
+           (project-root-project-name project)
+           (cdr project))
+   (mapconcat
+    (lambda (b)
+      (let ((mark (concat (cdr project) b)))
+        (format "*** [[file:%s][%s]] (%s)" mark b mark)))
+    (project-root-bookmarks project)
+    "\n")
+   "\n"))
 
 (define-derived-mode project-root-list-mode org-mode "Project-List"
   (setq buffer-read-only t))
@@ -265,10 +265,8 @@ project."
 (define-key project-root-list-mode-map "q" 'kill-this-buffer)
 (define-key project-root-list-mode-map "s" 'isearch-forward)
 (define-key project-root-list-mode-map "r" 'isearch-backward)
-(define-key project-root-list-mode-map (kbd "RET") (lambda () (interactive)
-                                                     (beginning-of-line)
-                                                     (org-next-link)
-                                                     (org-open-at-point t)))
+(define-key project-root-list-mode-map (kbd "RET")
+  (lambda () (interactive) (beginning-of-line) (org-next-link) (org-open-at-point t)))
 
 (defun project-root-browse-seen-projects ()
   "Browse the projects that have been seen so far this session."
