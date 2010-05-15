@@ -142,8 +142,14 @@
   (require 'outline)
   (require 'dired))
 
+(defun project-root-find-prune (paths)
+  (mapconcat '(lambda (path)
+                (concat " -path \"" path "\" -prune "))
+             paths "-o"))
+
 (defvar project-root-extra-find-args
-  (find-to-string '(prune (name ".svn" ".git" ".hg")))
+  (project-root-find-prune '("*/.hg" "*/.git" "*/.svn"))
+;  (find-to-string '(prune (name ".svn" ".git" ".hg")))
   "Extra find args that will be AND'd to the defaults (which are
 in `project-root-file-find-process')")
 
@@ -442,15 +448,10 @@ directory they are found in so that they are unique."
     ;; TODO: use find-cmd here
     (concat (project-root-find-executable) " " default-directory
             (project-root-find-prune exclude-paths)
-            (project-root-find-prune '("*/.hg" "*/.git" "*/.svn"))
+            project-root-extra-find-args
             ", -type f -regex \"" filename-regex "\" "
             (if pattern (concat " -name '*" pattern "*' "))
             project-root-find-options)))
-
-(defun project-root-find-prune (paths)
-  (mapconcat '(lambda (path)
-                (concat " -path \"" path "\" -prune "))
-             paths "-o"))
 
 (defun project-root-filename (file)
   (let ((name (replace-regexp-in-string default-directory ""
