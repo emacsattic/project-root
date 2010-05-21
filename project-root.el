@@ -268,11 +268,19 @@ project."
 (define-derived-mode project-root-list-mode org-mode "Project-List"
   (setq buffer-read-only t))
 
-(define-key project-root-list-mode-map "q" 'kill-this-buffer)
-(define-key project-root-list-mode-map "s" 'isearch-forward)
-(define-key project-root-list-mode-map "r" 'isearch-backward)
-(define-key project-root-list-mode-map (kbd "RET")
-  (lambda () (interactive) (beginning-of-line) (org-next-link) (org-open-at-point t)))
+(dolist (keyfunc
+         `(("q" kill-this-buffer)
+           ("s" isearch-forward)
+           ("r" isearch-backward)
+           (,(kbd "RET")
+            (lambda () (interactive) (beginning-of-line)
+              (org-next-link) (org-open-at-point t)))
+           ("d" (lambda () (interactive) (beginning-of-line)
+                  (setq buffer-read-only nil)
+                  (kill-line t)
+                  (setq buffer-read-only t)))))
+
+  (define-key project-root-list-mode-map (car keyfunc) (cadr keyfunc)))
 
 (defun project-root-browse-seen-projects ()
   "Browse the projects that have been seen so far this session."
