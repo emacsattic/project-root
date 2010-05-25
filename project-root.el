@@ -275,9 +275,11 @@ project."
            (,(kbd "RET")
             (lambda () (interactive) (beginning-of-line)
               (org-next-link) (org-open-at-point t)))
-           ("d" (lambda () (interactive) (beginning-of-line)
+           ("d" (lambda () (interactive)
                   (setq buffer-read-only nil)
-                  (kill-line t)
+                  (delete-region
+                   (line-beginning-position)
+                   (line-beginning-position 2))
                   (setq buffer-read-only t)))))
 
   (define-key project-root-list-mode-map (car keyfunc) (cadr keyfunc)))
