@@ -144,7 +144,7 @@
 
 (defun project-root-find-prune (paths)
   (mapconcat '(lambda (path)
-                (concat " -path \"" path "\" -prune "))
+                (concat " -path \"" default-directory path "\" -prune "))
              paths "-o"))
 
 (defvar project-root-extra-find-args
@@ -275,12 +275,12 @@ project."
            (,(kbd "RET")
             (lambda () (interactive) (beginning-of-line)
               (org-next-link) (org-open-at-point t)))
-           ("d" (lambda () (interactive)
-                  (setq buffer-read-only nil)
-                  (delete-region
-                   (line-beginning-position)
-                   (line-beginning-position 2))
-                  (setq buffer-read-only t)))))
+           (,(kbd "C-d") (lambda () (interactive)
+                           (setq buffer-read-only nil)
+                           (delete-region
+                            (line-beginning-position)
+                            (line-beginning-position 2))
+                           (setq buffer-read-only t)))))
 
   (define-key project-root-list-mode-map (car keyfunc) (cadr keyfunc)))
 
