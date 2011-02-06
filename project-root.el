@@ -218,7 +218,7 @@ described in PROJECT."
   (let ((root (plist-get project :root))
         (new-root))
     (catch 'not-a-project
-      (mapcar
+      (mapc
        (lambda (test)
          (when (plist-get project (car test))
            ;; grab a potentially different root
@@ -597,13 +597,14 @@ then the current project-details are used."
 `project-root-extra-find-args' and the hard-coded arguments in
 this function."
   (when anything-project-root
-      (start-process-shell-command "project-root-find"
-                                   nil
-                                   "find"
-                                   (cdr anything-project-root)
-                                   (find-to-string
-                                    `(and ,project-root-extra-find-args
-                                          (name ,(concat "*" pattern "*"))
-                                          (type "f"))))))
+      (start-process-shell-command
+       "project-root-find"
+       nil
+       "find"
+       (cdr anything-project-root)
+       (find-to-string
+        `(and ,project-root-extra-find-args
+              (name ,(concat "*" pattern "*"))
+              (type "f"))))))
 
 (provide 'project-root)
